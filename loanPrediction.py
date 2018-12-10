@@ -1,12 +1,19 @@
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+import os
+
+
 
 
 pd.set_option('display.expand_frame_repr', False)
 
+# File pathes:
+sample_path=os.path.dirname(__file__) + "/Samples/"
+
+
 #Load the dataset into a pandas dataframe
-dataFrame=pd.read_csv("train.csv")
+dataFrame=pd.read_csv(sample_path + "train.csv")
 
 print(dataFrame.head())
 
@@ -37,9 +44,11 @@ dataFrame['ApplicantIncome'].hist(bins=50).plot
 
 ax2=fig.add_subplot(122)
 dataFrame.boxplot(column='ApplicantIncome').plot
+plt.show()
 
 dataFrame['LoanAmount'].plot.hist(bins=50)
 plt.title("Loan Amount")
+plt.show()
 
 
 dataFrame.boxplot(column="LoanAmount")
@@ -47,7 +56,7 @@ dataFrame.boxplot(column="LoanAmount")
 
 
 dataFrame.boxplot(column='ApplicantIncome',by='Education')
-
+plt.show()
 
 
 # Frequency of Credit history
@@ -59,3 +68,18 @@ getLoan=dataFrame.pivot_table(values='Loan_Status',index=['Credit_History'], agg
 print("Probability of getting loan:","\n",getLoan)
 
 
+# Visualization of the pivot tables above
+fig =plt.figure(figsize=(8,4))
+ax1=fig.add_subplot(121)
+ax1.set_xlabel('Credit_History')
+ax1.set_ylabel('Count of Applicants')
+ax1.set_title("Applicants by Credit History")
+creditHistory.plot(kind="bar")
+
+ax2=fig.add_subplot(122)
+ax2.set_xlabel("Credit_History")
+ax2.set_ylabel("Probability of getting loan")
+ax2.set_title("Probability of getting loan by credit history")
+getLoan.plot(kind='bar')
+
+plt.show()
