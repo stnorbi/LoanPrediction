@@ -40,20 +40,21 @@ fig=plt.Figure(figsize=(1,4))
 ax1=fig.add_subplot(111)
 ax1.set_title("Distribution of Applicant Income")
 dataFrame['ApplicantIncome'].hist(bins=50).plot
+plt.show()
 
 
 ax2=fig.add_subplot(122)
 dataFrame.boxplot(column='ApplicantIncome').plot
+dataFrame.boxplot(column='ApplicantIncome',by='Education')
+plt.show()
 
 dataFrame['LoanAmount'].plot.hist(bins=50)
 plt.title("Loan Amount")
-
+plt.show()
 
 dataFrame.boxplot(column="LoanAmount")
 
 
-
-dataFrame.boxplot(column='ApplicantIncome',by='Education')
 
 
 # Frequency of Credit history
@@ -80,7 +81,10 @@ ax2.set_ylabel("Probability of getting loan")
 ax2.set_title("Probability of getting loan by credit history")
 
 
-# todo correct the crosstab plot!!!
-combined_viz=pd.crosstab(dataFrame['Gender'], dataFrame['Loan_Status'],values=dataFrame['Credit_History'],aggfunc=lambda x: x.map({"1.0":1,"0.0":0}).mean())
+
+combined_viz=pd.crosstab(dataFrame['Credit_History'], dataFrame['Loan_Status'])
 combined_viz.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
+
+combined_viz2=pd.crosstab(index=[dataFrame['Credit_History'],dataFrame['Gender']], columns=dataFrame['Loan_Status'])
+combined_viz2.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
 plt.show()
