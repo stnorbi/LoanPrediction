@@ -88,3 +88,8 @@ combined_viz.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
 combined_viz2=pd.crosstab(index=[dataFrame['Credit_History'],dataFrame['Gender']], columns=dataFrame['Loan_Status'])
 combined_viz2.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
 plt.show()
+
+
+print("\n Missing values in data set:\n",dataFrame.apply(lambda x:sum(x.isnull()),axis=0))
+
+print("\n Impute the missing values by mean:\n",dataFrame['LoanAmount'].fillna(dataFrame['LoanAmount'].mean(),inplace=True))
