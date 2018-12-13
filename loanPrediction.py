@@ -45,14 +45,14 @@ plt.show()
 
 ax2=fig.add_subplot(122)
 dataFrame.boxplot(column='ApplicantIncome').plot
-dataFrame.boxplot(column='ApplicantIncome',by='Education')
+dataFrame.boxplot(column='ApplicantIncome',by='Education').plot
 plt.show()
 
 dataFrame['LoanAmount'].plot.hist(bins=50)
 plt.title("Loan Amount")
 plt.show()
 
-dataFrame.boxplot(column="LoanAmount")
+dataFrame.boxplot(column="LoanAmount").plot
 
 
 
@@ -92,4 +92,30 @@ plt.show()
 
 print("\n Missing values in data set:\n",dataFrame.apply(lambda x:sum(x.isnull()),axis=0))
 
-print("\n Impute the missing values by mean:\n",dataFrame['LoanAmount'].fillna(dataFrame['LoanAmount'].mean(),inplace=True))
+print("\n Impute the missing values of LoanAmount by mean:\n")
+dataFrame['LoanAmount'].fillna(dataFrame['LoanAmount'].mean(),inplace=True)
+print(dataFrame.head(20))
+
+# A key hypothesis is that the whether a person is educated or self-employed can combine to give a good estimate of loan amount.
+
+dataFrame.boxplot(column='LoanAmount',by=['Education','Self_Employed']).plot
+plt.show()
+
+print("\nImpute the the missing values of Self_Employed variable by 'NO' as its probability is high\n")
+dataFrame['Self_Employed'].fillna('No',inplace=True)
+print(dataFrame.head(20))
+
+
+# median tables of "Self_Employed" and "Education" features
+
+table=dataFrame.pivot_table(values="LoanAmount",index='Self_Employed',columns='Education',aggfunc=np.median)
+
+# value print function
+def printvalue(x):
+    return table.oc[x['Self_Employed'],x['Education']]
+
+
+# Impute missing values in the LoanAmount feature table
+# TODO: Correct the line below
+dataFrame['LoanAmount'].fillna(dataFrame[dataFrame['LoanAmount'].isnull()].apply(printvalue,axis=1),inplace=True)
+print("\n",dataFrame.head(20))
