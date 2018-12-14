@@ -83,9 +83,9 @@ combined_viz2.plot(kind='bar',stacked=True,color=['red','blue'],grid=False,ax=ax
 
 print("\n Missing values in data set:\n",dataFrame.apply(lambda x:sum(x.isnull()),axis=0))
 
-print("\n Impute the missing values of LoanAmount by mean:\n")
-dataFrame['LoanAmount'].fillna(dataFrame['LoanAmount'].mean(),inplace=True)
-print(dataFrame.head(20))
+# print("\n Impute the missing values of LoanAmount by mean:\n")
+# dataFrame['LoanAmount'].fillna(dataFrame['LoanAmount'].mean(),inplace=True)
+# print(dataFrame.head(10))
 
 # A key hypothesis is that the whether a person is educated or self-employed can combine to give a good estimate of loan amount.
 
@@ -97,7 +97,7 @@ dataFrame.boxplot(column='LoanAmount',by=['Education','Self_Employed'],ax=axes[0
 
 print("\nImpute the the missing values of Self_Employed variable by 'NO' as its probability is high\n")
 dataFrame['Self_Employed'].fillna('No',inplace=True)
-print(dataFrame.head(20))
+print(dataFrame.head(10))
 
 
 # median tables of "Self_Employed" and "Education" features
@@ -106,7 +106,7 @@ table=dataFrame.pivot_table(values="LoanAmount",index='Self_Employed',columns='E
 
 # value print function
 def printvalue(x):
-    return table.oc[x['Self_Employed'],x['Education']]
+    return table.loc[x['Self_Employed'],x['Education']]
 
 
 # Impute missing values in the LoanAmount feature table
@@ -114,6 +114,21 @@ def printvalue(x):
 dataFrame['LoanAmount'].fillna(dataFrame[dataFrame['LoanAmount'].isnull()].apply(printvalue,axis=1),inplace=True)
 print("\n",dataFrame.head(20))
 
+# nullify the effect of Loan Amount outliers
+dataFrame['LoanAmount_log']=np.log(dataFrame['LoanAmount'])
 
+fig2.add_subplot(1,2,2).set_title("Loan Amount (log)")
+dataFrame['LoanAmount_log'].hist(bins=20).plot()
 fig2.suptitle("")
-#plt.show()
+
+# Aggregation of the incomes (Applicant + Co-applicant)
+dataFrame['TotalIncome']=dataFrame['LoanAmount'] + dataFrame['CoapplicantIncome']
+dataFrame['TotalIncome_log']=np.log(dataFrame['TotalIncome'])
+
+fig3, axes=plt.subplots(nrows=1,ncols=1)
+fig3.tight_layout()
+fig3.add_subplot(1,1,1).set_title('Total Income (log)')
+dataFrame['TotalIncome_log'].hist(bins=20).plot()
+
+
+plt.show()
