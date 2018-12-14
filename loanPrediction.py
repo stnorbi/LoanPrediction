@@ -36,25 +36,26 @@ def freq_nonnum(df):
 freq_nonnum(dataFrame)
 
 #Distribution analysis of numerical variables
-fig=plt.Figure(figsize=(1,4))
-ax1=fig.add_subplot(111)
-ax1.set_title("Distribution of Applicant Income")
-dataFrame['ApplicantIncome'].hist(bins=50).plot
-plt.show()
+fig, axes=plt.subplots(nrows=3,ncols=3)
+fig.tight_layout()
+# ax1.set_title("Distribution of Applicant Income")
+fig.add_subplot(3,3,1).set_title("Application Income")
+dataFrame['ApplicantIncome'].hist(bins=50).plot()
 
 
-ax2=fig.add_subplot(122)
-dataFrame.boxplot(column='ApplicantIncome').plot
-dataFrame.boxplot(column='ApplicantIncome',by='Education').plot
-plt.show()
-
-dataFrame['LoanAmount'].plot.hist(bins=50)
-plt.title("Loan Amount")
-plt.show()
-
-dataFrame.boxplot(column="LoanAmount").plot
+fig.add_subplot(3,3,2)
+dataFrame.boxplot(column='ApplicantIncome').plot()
 
 
+dataFrame.boxplot(column='ApplicantIncome',by='Education', ax=axes[0,2])
+
+
+plt.subplot(3,3,4).set_title("Loan Amount")
+dataFrame['LoanAmount'].plot.hist(bins=50).plot()
+
+dataFrame.boxplot(column="LoanAmount",ax=axes[1,1])
+
+fig.suptitle("")
 
 
 # Frequency of Credit history
@@ -67,27 +68,17 @@ print("Probability of getting loan:","\n",getLoan)
 
 
 # Visualization of the pivot tables above
-fig =plt.figure(figsize=(8,4))
-ax1=fig.add_subplot(121)
-ax1.set_xlabel('Credit_History')
-ax1.set_ylabel('Count of Applicants')
-ax1.set_title("Applicants by Credit History")
-creditHistory.plot(kind="bar")
+creditHistory.plot(kind="bar",ax=axes[1,2]).set_title("Applicants by Credit History")
 
-ax2=fig.add_subplot(122)
-getLoan.plot(kind='bar')
-ax2.set_xlabel("Credit_History")
-ax2.set_ylabel("Probability of getting loan")
-ax2.set_title("Probability of getting loan by credit history")
-
+getLoan.plot(kind='bar',ax=axes[2,0]).set_title("Probability of getting Loan")
 
 
 combined_viz=pd.crosstab(dataFrame['Credit_History'], dataFrame['Loan_Status'])
-combined_viz.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
+combined_viz.plot(kind='bar',stacked=True,color=['red','blue'],grid=False,ax=axes[2,1]).set_title("Getting Loan by Credit History")
 
 combined_viz2=pd.crosstab(index=[dataFrame['Credit_History'],dataFrame['Gender']], columns=dataFrame['Loan_Status'])
-combined_viz2.plot(kind='bar',stacked=True,color=['red','blue'],grid=False)
-plt.show()
+combined_viz2.plot(kind='bar',stacked=True,color=['red','blue'],grid=False,ax=axes[2,2]).set_title("Getting Loan by Gender and Credit History")
+
 
 
 print("\n Missing values in data set:\n",dataFrame.apply(lambda x:sum(x.isnull()),axis=0))
@@ -98,8 +89,11 @@ print(dataFrame.head(20))
 
 # A key hypothesis is that the whether a person is educated or self-employed can combine to give a good estimate of loan amount.
 
-dataFrame.boxplot(column='LoanAmount',by=['Education','Self_Employed']).plot
-plt.show()
+
+fig2, axes=plt.subplots(nrows=1,ncols=2)
+fig2.tight_layout()
+dataFrame.boxplot(column='LoanAmount',by=['Education','Self_Employed'],ax=axes[0])
+
 
 print("\nImpute the the missing values of Self_Employed variable by 'NO' as its probability is high\n")
 dataFrame['Self_Employed'].fillna('No',inplace=True)
@@ -116,6 +110,10 @@ def printvalue(x):
 
 
 # Impute missing values in the LoanAmount feature table
-# TODO: Correct the line below
+
 dataFrame['LoanAmount'].fillna(dataFrame[dataFrame['LoanAmount'].isnull()].apply(printvalue,axis=1),inplace=True)
 print("\n",dataFrame.head(20))
+
+
+fig2.suptitle("")
+#plt.show()
